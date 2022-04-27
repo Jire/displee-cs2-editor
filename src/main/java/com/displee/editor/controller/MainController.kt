@@ -348,8 +348,9 @@ class MainController : Initializable {
 				try {
 					CS2Reader.readCS2ScriptNewFormat(data, id, config.unscrambled, config.disableSwitches, config.disableLongs)
 				} catch(e: Throwable) {
-					error++
+					//error++
 					if (error >= 2) {
+						e.printStackTrace()
 						break
 					}
 				}
@@ -360,10 +361,10 @@ class MainController : Initializable {
 		var configuration: ScriptConfiguration? = null
 		if (cacheLibrary.isOSRS()) {
 			val configurations = arrayOf(
-				ScriptConfiguration(154, "/cs2/opcode/database/osrs.ini", false, true),
-				ScriptConfiguration(176, "/cs2/opcode/database/osrs.ini", false, true),
-				ScriptConfiguration(179, "/cs2/opcode/database/osrs.ini", false, true)
-			)
+				ScriptConfiguration(179, "/cs2/opcode/database/osrs.ini", false, true),
+				/*ScriptConfiguration(176, "/cs2/opcode/database/osrs.ini", false, true),
+				ScriptConfiguration(154, "/cs2/opcode/database/osrs.ini", false, true)
+			*/)
 			for (i in configurations) {
 				if (testUnit(i)) {
 					configuration = i
