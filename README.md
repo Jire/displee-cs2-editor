@@ -6,6 +6,7 @@ These keys are currently handled by the program:
 - Ctrl + N Create new script
 - Ctrl + S Compile script
 - Ctrl + D Pack script
+- Ctrl + E Export script
 
 ## Media
 ![Script example](https://i.imgur.com/SEH2GpT.png)

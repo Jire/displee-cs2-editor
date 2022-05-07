@@ -14,6 +14,7 @@ import com.displee.editor.ui.buildStyle
 import com.displee.editor.ui.window.AboutWindow
 import dawn.cs2.*
 import dawn.cs2.CS2Type.*
+import dawn.cs2.ast.FunctionNode
 import dawn.cs2.util.FunctionDatabase
 import javafx.application.Platform
 import javafx.fxml.FXML
@@ -53,6 +54,9 @@ class MainController : Initializable {
 
 	@FXML
 	private lateinit var buildMenuItem: MenuItem
+
+	@FXML
+	private lateinit var exportMenuItem: MenuItem
 
 	@FXML
 	private lateinit var showAssemblyMenuItem: CheckMenuItem
@@ -120,6 +124,9 @@ class MainController : Initializable {
 		}
 		buildMenuItem.setOnAction {
 			packScript()
+		}
+		exportMenuItem.setOnAction {
+			exportScript()
 		}
 		showAssemblyMenuItem.setOnAction {
 			if (showAssemblyMenuItem.isSelected) {
@@ -293,6 +300,8 @@ class MainController : Initializable {
 				compileScript()
 			} else if (e.isControlDown && e.code == KeyCode.D) {
 				packScript()
+			} else if (e.isControlDown && e.code == KeyCode.E) {
+				exportScript()
 			} else if (e.code == KeyCode.ENTER) {
 				val caretPosition = codeArea.caretPosition
 				val currentParagraph = codeArea.currentParagraph
@@ -336,6 +345,7 @@ class MainController : Initializable {
 			newMenuItem.isDisable = false
 			saveMenuItem.isDisable = false
 			buildMenuItem.isDisable = false
+			exportMenuItem.isDisable = false
 		}
 	}
 
@@ -572,19 +582,46 @@ class MainController : Initializable {
 		}
 	}
 
+	private fun compileScript(
+		function: FunctionNode,
+		compiler: CS2Compiler = CS2Compiler(
+			function,
+			scriptConfiguration.scrambled,
+			scriptConfiguration.disableSwitches,
+			scriptConfiguration.disableLongs
+		)
+	) = compiler.compile(null) ?: throw Error("Failed to compile.")
+
 	private fun packScript() {
 		val script = currentScript ?: return
 		val activeCodeArea = activeCodeArea()
 		try {
 			val function = CS2ScriptParser.parse(activeCodeArea.text, opcodesDatabase, scriptsDatabase)
-			val compiler = CS2Compiler(function, scriptConfiguration.scrambled, scriptConfiguration.disableSwitches, scriptConfiguration.disableLongs)
-			val compiled = compiler.compile(null) ?: throw Error("Failed to compile.")
+			val compiled = compileScript(function)
 			cacheLibrary.put(SCRIPTS_INDEX, script.scriptID, compiled)
 			activeCodeArea.autoCompletePopup?.init(function)
 			if (cacheLibrary.index(SCRIPTS_INDEX).update()) {
 				printConsoleMessage("Packed script ${script.scriptID} successfully.")
 			} else {
 				printConsoleMessage("Failed to pack script ${script.scriptID}.")
+			}
+		} catch(t: Throwable) {
+			t.printStackTrace()
+			printConsoleMessage(t.message)
+		}
+	}
+
+	private fun exportScript() {
+		val script = currentScript ?: return
+		val activeCodeArea = activeCodeArea()
+		try {
+			val function = CS2ScriptParser.parse(activeCodeArea.text, opcodesDatabase, scriptsDatabase)
+			val compiled = compileScript(function)
+			File("exported/${script.scriptID}.cs2").writeBytes(compiled)
+			if (cacheLibrary.index(SCRIPTS_INDEX).update()) {
+				printConsoleMessage("Exported script ${script.scriptID} successfully.")
+			} else {
+				printConsoleMessage("Failed to export script ${script.scriptID}.")
 			}
 		} catch(t: Throwable) {
 			t.printStackTrace()
@@ -622,6 +659,7 @@ class MainController : Initializable {
 		newMenuItem.isDisable = true
 		saveMenuItem.isDisable = true
 		buildMenuItem.isDisable = true
+		exportMenuItem.isDisable = true
 	}
 
 	private fun status(status: String) {
