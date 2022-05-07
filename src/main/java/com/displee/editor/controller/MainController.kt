@@ -50,6 +50,9 @@ class MainController : Initializable {
 	private lateinit var openMenuItem: MenuItem
 
 	@FXML
+	private lateinit var openRecentMenu: Menu
+
+	@FXML
 	private lateinit var saveMenuItem: MenuItem
 
 	@FXML
@@ -119,6 +122,19 @@ class MainController : Initializable {
 		openMenuItem.setOnAction {
 			openCache()
 		}
+		val recentFile = File(RECENT_FILE_PATH)
+		if (recentFile.exists())
+			recentFile
+				.readLines()
+				.distinct()
+				.map { line ->
+					MenuItem(line).apply {
+						setOnAction {
+							openCache(line, false)
+						}
+					}
+				}
+				.forEach { openRecentMenu.items.add(it) }
 		saveMenuItem.setOnAction {
 			compileScript()
 		}
@@ -215,16 +231,11 @@ class MainController : Initializable {
 		AutoCompleteUtils
 	}
 
-	private fun openCache(f: File? = null) {
-		var mehFile = f
-		if (mehFile == null) {
-			val chooser = DirectoryChooser()
-			mehFile = chooser.showDialog(mainWindow()) ?: return
-		}
+	private fun openCache(absolutePath: String, appendRecent: Boolean) {
 		scriptList.isDisable = true
 		GlobalScope.launch {
 			try {
-				cacheLibrary = CacheLibrary(mehFile.absolutePath, listener = object : ProgressListener {
+				cacheLibrary = CacheLibrary(absolutePath, listener = object : ProgressListener {
 					override fun notify(progress: Double, message: String?) {
 						if (message == null) {
 							return
@@ -245,10 +256,22 @@ class MainController : Initializable {
 				}
 				loadScripts()
 				createScriptConfigurations()
+
+				if (appendRecent)
+					File(RECENT_FILE_PATH).appendText(absolutePath)
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
 		}
+	}
+
+	private fun openCache(f: File? = null) {
+		var mehFile = f
+		if (mehFile == null) {
+			val chooser = DirectoryChooser()
+			mehFile = chooser.showDialog(mainWindow()) ?: return
+		}
+		openCache(mehFile.absolutePath, true)
 	}
 
 	private fun loadScripts() {
@@ -760,6 +783,8 @@ class MainController : Initializable {
 			spansBuilder.add(Collections.emptyList(), text.length - lastKwEnd)
 			return spansBuilder.create()
 		}
+
+		private const val RECENT_FILE_PATH = "recent.txt"
 
 	}
 
