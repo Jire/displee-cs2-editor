@@ -1,6 +1,7 @@
 rootProject.name = "cs2-release"
 
 dependencyResolutionManagement {
+    @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
         gradlePluginPortal()
@@ -14,6 +15,6 @@ pluginManagement {
     }
 
     plugins {
-        kotlin("jvm") version "1.6.21"
+        kotlin("jvm") version "1.7.20"
     }
 }
