@@ -26,7 +26,7 @@ dependencies {
 
     implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation("org.fxmisc.richtext:richtextfx:0.10.9")
-    implementation("com.google.code.gson:gson:2.10.0")
+    implementation("com.google.code.gson:gson:2.10")
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
