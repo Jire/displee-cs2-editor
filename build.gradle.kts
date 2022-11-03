@@ -18,7 +18,7 @@ dependencies {
     implementation("com.displee:disio:2.2")
     implementation("com.displee:rs-cache-library:6.8.1")
 
-    val jettyVersion = "11.0.9"
+    val jettyVersion = "11.0.12"
     implementation("org.eclipse.jetty:jetty-io:$jettyVersion")
     implementation("org.eclipse.jetty:jetty-server:$jettyVersion")
     implementation("org.eclipse.jetty:jetty-http:$jettyVersion")
@@ -26,10 +26,10 @@ dependencies {
 
     implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation("org.fxmisc.richtext:richtextfx:0.10.9")
-    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 application {
